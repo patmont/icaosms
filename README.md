@@ -1,5 +1,6 @@
 # icaosms
-Retrieves all aircraft for a defined radius around a defined coordinate.
+Retrieves all aircraft for a defined radius around a defined coordinate 
+from Virtual Radar Server http json request.
 Parses the list for flags 'Interested', 'Mil', and custom Icao identifier.
 Sends an SMS notification when conditions are met.
 
