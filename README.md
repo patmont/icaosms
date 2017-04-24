@@ -4,7 +4,7 @@ Parses the list for flags 'Interested', 'Mil', and custom Icao identifier.
 Sends an SMS notification when conditions are met.
 
 ## Requirements:
-pyhton 3 environment
+python 3 environment
 
 [Twilio](https://github.com/twilio/twilio-python)
 
