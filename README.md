@@ -3,6 +3,10 @@ Retrieves all aircraft for a defined radius around a defined coordinate.
 Parses the list for flags 'Interested', 'Mil', and custom Icao identifier.
 Sends an SMS notification when conditions are met.
 
+## Requirements:
+pyhton 3 environment
+[Twilio](https://github.com/twilio/twilio-python)
+
 ## Usage:
 Install twilio from instructions [here](https://github.com/twilio/twilio-python)
 or
@@ -20,5 +24,7 @@ Add any watch identifiers to like 160 using comma separation.
 watchlist = [] # Enter your 6 digit call sign [here] for alerts
 ```
 
-Run icaosms.py passing args:
+Run icaosms.py in terminal passing args:
+```
 python3 icaosms.py [dec_latitude] [dec_longitude] [radius_km] [+destinationphone] [+twilionumber]
+```
