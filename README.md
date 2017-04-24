@@ -11,9 +11,9 @@ python 3 environment
 
 ## Usage:
 Install twilio from instructions [here](https://github.com/twilio/twilio-python)
-or
+or:
 ```
-pip install twilio
+  pip install twilio
 ```
 
 Create a twilio account and retrieve your 34 digit account SID and 32 digit AUTH token
@@ -21,12 +21,15 @@ under account summary. Add these to line 58:
 ```
   client = TwilioRestClient("your-34-character-key", "your-32-character-key")
 ```
-Add any watch identifiers to like 160 using comma separation.
+Add any watch identifiers to like 160 using comma separation:
 ```
-watchlist = [] # Enter your 6 digit call sign [here] for alerts
+  watchlist = [] # Enter your 6 digit call sign [here] for alerts
 ```
-
+Add Virtual Radar Server address to line 161:
+```
+  url = ('http://your-server/VirtualRadar/AircraftList.json?'
+```
 Run icaosms.py in terminal passing args:
 ```
-python3 icaosms.py [dec_latitude] [dec_longitude] [radius_km] [+destinationphone] [+twilionumber]
+  python3 icaosms.py [dec_latitude] [dec_longitude] [radius_km] [+destinationphone] [+twilionumber]
 ```
