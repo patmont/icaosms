@@ -158,7 +158,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     watchlist = [] # Enter your 6 digit call sign [here] for alerts
-    url = ('http://public-api.adsbexchange.com/VirtualRadar/AircraftList.json?'
+    url = ('http://your-server/VirtualRadar/AircraftList.json?'
            'lat={lat}&lng={lng}&fDstL=0&fDstU={radius}'.format(lat=args.lat, lng=args.lng, radius=args.radius))
 
     icao_notify(args.telto, args.telfrom)
