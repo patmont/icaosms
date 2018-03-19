@@ -7,8 +7,6 @@ Usage:
     python3 icaosms.py [dec_latitude] [dec_longitude] [radius_km] [+destinationphone] [+twilionumber]
 
 Requirements:
-    twilio
-    Modify for your API keys
 
 Copyright:
     icaosms.py Copyright 2017, Patrick Montalbano
@@ -28,137 +26,161 @@ Copyright:
 """
 # TODO: Make watchlist, blacklist optional
 import argparse
+from urllib.request import build_opener, HTTPCookieProcessor
+from http.cookiejar import CookieJar
+import json
+import time, datetime
+import http
+import smtplib
+from email.mime.text import MIMEText
+import configparser
+import csv
 
 
-def icao_notify(telto, telfrom):
-    """Sends SMS notification of interesting aircraft in geofence radius.
-    
-    Uses periodic Virtual Radar API request to retrieve all flights in a defined radius.
-    Filters flights in range using flags and user defined watchlist.
-    Sends an SMS message.
-    
-    Args:
-        telto:
-        telfrom:
+class Notifier:
+    def __init__(self):
+        self.config = configparser.ConfigParser()
+        self.config.read('config.ini')
 
-    Usage:
-        trFmt=sa, location trail;fCallQ=######, filter callsign
-    References:
-        https://www.adsbexchange.com/data/
-        http://www.virtualradarserver.co.uk/Documentation/Formats/AircraftList.aspx
-    """
-    from urllib.request import Request, urlopen, build_opener, HTTPCookieProcessor
-    from http.cookiejar import CookieJar
-    import json
-    from twilio.rest import TwilioRestClient
-    import time
-    import http
+        self.url = self.config['VRS']['url']
+        self.refresh_time = self.config['TIMING']['refresh_time']
+        self.flags = [self.config['VRS']['flags']]
+        with open('watchlist.csv', 'r') as f:
+            r = csv.reader(f)
+            self.watchlist = list(r)
+        with open('blacklist.csv', 'r') as f:
+            r = csv.reader(f)
+            self.blacklist = list(r)
+        self.timeout_time = int(self.config['TIMING']['timeout'])
+        self.smtp_ssl_host = self.config['MAIL']['server']
+        self.smtp_ssl_port = self.config['MAIL']['port']
+        self.mailto = self.config['MAIL']['to']
+        self.mailfrom = self.config['MAIL']['from']
+        self.mail_auth = self.config['MAIL']['auth']
+        self.buffer = {}
+        self.data = {}
+        self.parsed_data = {}
 
-    # Twilio Account SID and Auth Token
-    client = TwilioRestClient("your-34-character-key", "your-32-character-key")
-    starttime = time.time()
-    
-    while True:
-        message = []         # Initiate and clear message every loop
+    def best_position(self):
+        """ACARS vs MLAT position is reported differently in VRS; unify values under a new key."""
+        data = self.data
 
-        try:
-            cooldown
-        except NameError:
-            print('(re)initializing cooldown')
-            # Initialize dictionary of all aircraft received indexed by Icao, each entry contains time first seen.
-            # Index values are removed after expire time time has passed.
-            # Dictionary grows as large as flights within the expire time.
-            cooldown = {}
+        for idx, plane in enumerate(self.data['acList']):
+            latitude = None
+            longitude = None
+            altitude = None
+            timestamp = None
+            speed = None
 
-        # Seconds flight is not to be repeated for
-        expire = 7200
+            # Use short trails if available
+            if 'Cos' in plane:
+                try:
+                    l = int(len(plane['Cos']) / 4)
+                    for i in range(0, l):
+                        latitude = plane['Cos'][0::4][i]
+                        longitude = plane['Cos'][1::4][i]
+                        timestamp = datetime.datetime.fromtimestamp(plane['Cos'][2::4][i] / 1000)
+                        if plane['TT'] == 'a':
+                            altitude = plane['Cos'][3::4][i]
+                        elif plane['TT'] == 's':
+                            speed = plane['Cos'][3::4][i]
+                        else:
+                            pass
+                except:
+                    pass
 
-        # Open url
+            # Use Lat Long if available
+            else:
+                try:
+                    latitude = plane['Lat']
+                    longitude = plane['Long']
+                    altitude = plane['alt']
+                    timestamp = plane['PosTime']
+
+                except:
+                    pass
+
+            # Append best position to data
+            self.data['acList'][idx].update({'latitude': latitude,
+                                             'longitude': longitude,
+                                             'altitude': altitude,
+                                             'timestamp': timestamp,
+                                             'speed': speed
+                                            })
+
+    def get_flights(self, best_position=True):
+        self.data = {}
         while True:
             try:
                 cj = CookieJar()
                 opener = build_opener(HTTPCookieProcessor(cj))
                 opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-                response = opener.open(url)
+                response = opener.open(self.url)
                 str_response = response.read().decode('utf-8')
-                data = json.loads(str_response)
+                self.data = json.loads(str_response)
+                if best_position:
+                    Notifier.best_position(self)
+
             except (IOError, http.client.HTTPException) as e:
-                    print(e)
+                print(e)
             break
+        return self.data
 
-        # Remove from cooldown dict after t time
-        for key in cooldown:
-            if time.time()-cooldown[key] > expire:
-                cooldown.pop(key, None)
-                break
+    def parse_flights(self):
+        """
+        References:
+            https://www.adsbexchange.com/data/
+            http://www.virtualradarserver.co.uk/Documentation/Formats/AircraftList.aspx
+        """
 
-        # Parse flight response list
-        for idx, plane in enumerate(data['acList']):       
+        self.parsed_data = {}         # Initiate and clear message every loop
+        for idx, plane in enumerate(self.data['acList']):
+            try:
+                icao = plane['Icao']
+            except KeyError:
+                continue
 
-            # Skip planes in cooldown
-            if plane['Icao'] in cooldown:
+            # Add or update plane to airspace
+            if icao not in self.buffer:
+                self.buffer[icao] = {'firstseen': time.time(),'notified': False}
+
+            # Skip planes already notified
+            if 'notified' in self.buffer[icao]\
+                    and self.buffer[icao]['notified'] == True:
                 continue    # Return to top of for loop and increment
 
-            # Interesting flag set
-            if plane['Interested']:
-                message.append(data['acList'][idx]['Icao'])
-                try: 
-                    message.append(plane['Op'])
-                except Exception:
-                    pass
-            # Personal Watchlist
-            if True in (x == plane['Icao'] for x in watchlist):
-                message.append(plane['Icao'])
-                try:
-                    message.append(plane['Op'])
-                except Exception:
-                    pass
-                try:
-                    message.append(plane['Mdl'])
-                except Exception:
-                    pass
-            # Mil flag
-            if plane['Mil']:
-                message.append(plane['Icao'])
-                try:
-                    message.append(plane['Op'])
-                except Exception:
-                    pass
-                try:
-                    message.append(plane['Mdl'])
-                except Exception:
-                    pass
+            # Parse conditions
+            if self.buffer[icao]['notified'] == False\
+                    and any(icao not in x for x in self.blacklist)\
+                    and plane['Mil'] is True and 'Mil' in self.flags \
+                    or plane['Interested'] is True and 'Interested' in self.flags\
+                    or any(icao in x for x in self.watchlist):
+                self.parsed_data[icao] = plane
 
-            # If flight is not in cooldown list
-            if plane['Icao'] not in cooldown:
-                cooldown.update({plane['Icao']: time.time()})
+            # Remove flight from airspace after timeout
+            for plane in self.buffer:
+                if time.time() - self.buffer[plane]['firstseen'] >= self.timeout_time:
+                    self.buffer.pop(plane, None)
 
-        # Build message string
-        string = ""
-        if len(message) > 0:
-            for item in message:
-                string += item
-                string += ", \n"
-            print(string)
+        return self.parsed_data
 
-        # account to send SMS to any phone number
-        if len(message) > 0:
-            client.messages.create(to=telto, from_=telfrom, body=string)
+    def email_notify(self, subject="Flight Notification"):
+        server = smtplib.SMTP_SSL(self.smtp_ssl_host, self.smtp_ssl_port, timeout=5)
+        server.login(self.mailfrom, self.mail_auth)
 
-        time.sleep(240.0 - ((time.time() - starttime) % 240.0))
+        for plane in self.parsed_data:
+            self.buffer[plane]['notified'] = True
 
-# Command line execution handling
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("lat", help="Center latitude")
-    parser.add_argument("lng", help="Center longitude")
-    parser.add_argument("radius", help="Radius in meters")
-    parser.add_argument("telto", help="Phone to, like +15555555555")
-    parser.add_argument("telfrom", help="Phone from: twilio phone number")
-    args = parser.parse_args()
+        msg = MIMEText(str(self.parsed_data))
+        msg['Subject'] = subject
+        msg['From'] = self.mailfrom
+        msg['To'] = self.mailto
+        server.sendmail(self.mailfrom, self.mailto, msg.as_string())
+        server.quit()
 
-    watchlist = [] # Enter your 6 digit call sign [here] for alerts
-    url = ('http://your-server/VirtualRadar/AircraftList.json?'
-           'lat={lat}&lng={lng}&fDstL=0&fDstU={radius}'.format(lat=args.lat, lng=args.lng, radius=args.radius))
 
-    icao_notify(args.telto, args.telfrom)
+
+
+
+
+
