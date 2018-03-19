@@ -6,30 +6,39 @@ Sends an SMS notification when conditions are met.
 
 ## Requirements:
 python 3 environment
+configparser:  pip install configparser
 
-[Twilio](https://github.com/twilio/twilio-python)
+
 
 ## Usage:
-Install twilio from instructions [here](https://github.com/twilio/twilio-python)
-or:
+
+Create config.ini file with the following:
 ```
-  pip install twilio
+[VRS]
+url = http://adsbexchange.com/VirtualRadar/AircraftList.json?lat=0.00&lng=0.00&fDstL=0&fDstU=30
+#flags may be Interested or Mil separated by comma
+flags = Interested, Mil
+
+[TIMING]
+# Notification is to be sent on the first instance of the airplane entering
+# the radius. The plane id enters a cooldown period before notification will
+# be sent again.
+timeout = 7200
+
+# How often data will be refreshed
+refresh_time = 240
+
+[MAIL]
+server=smtp.gmail.com
+port=465
+auth=*********
+from=from@gmail.com
+to=to@anywhere.com
 ```
 
-Create a twilio account and retrieve your 34 digit account SID and 32 digit AUTH token
-under account summary. Add these to line 58:
+Create watchlist.csv and blacklist.csv files.
+
+Run email_notify.py in terminal passing args:
 ```
-  client = TwilioRestClient("your-34-character-key", "your-32-character-key")
-```
-Add any watch identifiers to like 160 using comma separation:
-```
-  watchlist = [] # Enter your 6 digit call sign [here] for alerts
-```
-Add Virtual Radar Server address to line 161:
-```
-  url = ('http://your-server/VirtualRadar/AircraftList.json?'
-```
-Run icaosms.py in terminal passing args:
-```
-  python3 icaosms.py [dec_latitude] [dec_longitude] [radius_km] [+destinationphone] [+twilionumber]
+    python email_notify.py
 ```

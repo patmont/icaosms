@@ -1,4 +1,4 @@
-import icaosms as icao
+import notifier as icao
 import time
 
 notifier = icao.Notifier()

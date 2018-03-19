@@ -4,12 +4,12 @@ for flags 'Interested', 'Mil', and custom Icao identifier. Sends an SMS notifica
 are met.
 
 Usage:
-    python3 icaosms.py [dec_latitude] [dec_longitude] [radius_km] [+destinationphone] [+twilionumber]
+    python3 notifier.py [dec_latitude] [dec_longitude] [radius_km] [+destinationphone] [+twilionumber]
 
 Requirements:
 
 Copyright:
-    icaosms.py Copyright 2017, Patrick Montalbano
+    notifier.py Copyright 2017, Patrick Montalbano
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
