@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 """Retrieves all aircraft for a defined radius around a defined coordinate. Parses the list
-for flags 'Interested', 'Mil', and custom Icao identifier. Sends an SMS notification when conditions
+for flags 'Interested', 'Mil', and custom Icao identifier. Sends an email notification when conditions
 are met.
 
-Usage:
-    python3 notifier.py [dec_latitude] [dec_longitude] [radius_km] [+destinationphone] [+twilionumber]
-
 Requirements:
+    configparser
 
 Copyright:
     notifier.py Copyright 2017, Patrick Montalbano
@@ -25,7 +23,6 @@ Copyright:
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 # TODO: Make watchlist, blacklist optional
-import argparse
 from urllib.request import build_opener, HTTPCookieProcessor
 from http.cookiejar import CookieJar
 import json
@@ -62,7 +59,11 @@ class Notifier:
         self.parsed_data = {}
 
     def best_position(self):
-        """ACARS vs MLAT position is reported differently in VRS; unify values under a new key."""
+        """ACARS vs MLAT position is reported differently in VRS; unify values under a new key.
+            References:
+            https://www.adsbexchange.com/data/
+            http://www.virtualradarserver.co.uk/Documentation/Formats/AircraftList.aspx
+        """
         data = self.data
 
         for idx, plane in enumerate(self.data['acList']):
@@ -127,12 +128,6 @@ class Notifier:
         return self.data
 
     def parse_flights(self):
-        """
-        References:
-            https://www.adsbexchange.com/data/
-            http://www.virtualradarserver.co.uk/Documentation/Formats/AircraftList.aspx
-        """
-
         self.parsed_data = {}         # Initiate and clear message every loop
         for idx, plane in enumerate(self.data['acList']):
             try:
@@ -140,7 +135,7 @@ class Notifier:
             except KeyError:
                 continue
 
-            # Add or update plane to airspace
+            # Add or update plane to buffer
             if icao not in self.buffer:
                 self.buffer[icao] = {'firstseen': time.time(),'notified': False}
 
@@ -150,14 +145,13 @@ class Notifier:
                 continue    # Return to top of for loop and increment
 
             # Parse conditions
-            if self.buffer[icao]['notified'] == False\
-                    and any(icao not in x for x in self.blacklist)\
+            if any(icao not in x for x in self.blacklist)\
                     and plane['Mil'] is True and 'Mil' in self.flags \
                     or plane['Interested'] is True and 'Interested' in self.flags\
                     or any(icao in x for x in self.watchlist):
                 self.parsed_data[icao] = plane
 
-            # Remove flight from airspace after timeout
+            # Remove flight from buffer after timeout
             for plane in self.buffer:
                 if time.time() - self.buffer[plane]['firstseen'] >= self.timeout_time:
                     self.buffer.pop(plane, None)

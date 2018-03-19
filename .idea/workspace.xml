@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="860138a7-670d-4187-8ea8-81eeac3a0dd3" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/run.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test.ipynb" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/icaosms.py" afterPath="$PROJECT_DIR$/notifier.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/email_notify.py" afterPath="$PROJECT_DIR$/email_notify.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/notifier.py" afterPath="$PROJECT_DIR$/notifier.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -23,13 +19,13 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="525">
-      <file leaf-file-name="notifier.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="notifier.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/notifier.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2904">
-              <caret line="124" column="21" lean-forward="false" selection-start-line="124" selection-start-column="16" selection-end-line="124" selection-end-column="21" />
+            <state relative-caret-position="2976">
+              <caret line="124" column="61" lean-forward="true" selection-start-line="124" selection-start-column="61" selection-end-line="124" selection-end-column="61" />
               <folding>
-                <element signature="e#1113#1128#0" expanded="true" />
+                <element signature="e#1021#1081#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -47,7 +43,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="632">
@@ -62,6 +58,16 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
               <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="19" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="48">
+              <caret line="2" column="5" lean-forward="false" selection-start-line="2" selection-start-column="5" selection-end-line="2" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -109,9 +115,10 @@
         <option value="$PROJECT_DIR$/config.ini" />
         <option value="$PROJECT_DIR$/watchlist.csv" />
         <option value="$PROJECT_DIR$/icaosms.py" />
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/email_notify.py" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/notifier.py" />
       </list>
     </option>
   </component>
@@ -389,7 +396,7 @@
         <state relative-caret-position="2760">
           <caret line="124" column="21" lean-forward="false" selection-start-line="124" selection-start-column="16" selection-end-line="124" selection-end-column="21" />
           <folding>
-            <element signature="e#1113#1128#0" expanded="true" />
+            <element signature="e#1021#1081#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -449,7 +456,7 @@
         <state relative-caret-position="3408">
           <caret line="142" column="57" lean-forward="false" selection-start-line="142" selection-start-column="56" selection-end-line="142" selection-end-column="57" />
           <folding>
-            <element signature="e#1113#1128#0" expanded="true" />
+            <element signature="e#1021#1081#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -518,7 +525,7 @@
         <state relative-caret-position="2736">
           <caret line="122" column="0" lean-forward="false" selection-start-line="122" selection-start-column="0" selection-end-line="122" selection-end-column="0" />
           <folding>
-            <element signature="e#1113#1128#0" expanded="true" />
+            <element signature="e#1021#1081#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -587,7 +594,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#1113#1128#0" expanded="true" />
+            <element signature="e#1021#1081#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -629,7 +636,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#1113#1128#0" expanded="true" />
+            <element signature="e#1021#1081#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -674,14 +681,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/emailtest.py" />
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="3" column="14" lean-forward="false" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/run.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="336">
@@ -706,26 +705,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/email_notify.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/notifier.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2904">
-          <caret line="124" column="21" lean-forward="false" selection-start-line="124" selection-start-column="16" selection-end-line="124" selection-end-column="21" />
-          <folding>
-            <element signature="e#1113#1128#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/config.ini">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -739,6 +718,34 @@
         <state relative-caret-position="632">
           <caret line="38" column="45" lean-forward="false" selection-start-line="38" selection-start-column="45" selection-end-line="38" selection-end-column="45" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="48">
+          <caret line="2" column="5" lean-forward="false" selection-start-line="2" selection-start-column="5" selection-end-line="2" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/email_notify.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/notifier.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2976">
+          <caret line="124" column="61" lean-forward="true" selection-start-line="124" selection-start-column="61" selection-end-line="124" selection-end-column="61" />
+          <folding>
+            <element signature="e#1021#1081#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
