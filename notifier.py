@@ -41,7 +41,7 @@ class Notifier:
 
         self.url = self.config['VRS']['url']
         self.refresh_time = self.config['TIMING']['refresh_time']
-        self.flags = [self.config['VRS']['flags']]
+        self.flags = self.config['VRS']['flags']
         with open('watchlist.csv', 'r') as f:
             r = csv.reader(f)
             self.watchlist = list(r)
@@ -123,7 +123,7 @@ class Notifier:
                     Notifier.best_position(self)
 
             except (IOError, http.client.HTTPException) as e:
-                print(e)
+                raise
             break
         return self.data
 
@@ -152,7 +152,7 @@ class Notifier:
                 self.parsed_data[icao] = plane
 
             # Remove flight from buffer after timeout
-            for plane in self.buffer:
+            for plane in list(self.buffer):
                 if time.time() - self.buffer[plane]['firstseen'] >= self.timeout_time:
                     self.buffer.pop(plane, None)
 
