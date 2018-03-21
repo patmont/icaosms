@@ -3,3 +3,5 @@
 *.csv
 *.idea
 *__pycache__
+*.jpg
+!unavailable.jpg

@@ -23,7 +23,7 @@ Copyright:
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 # TODO: Make watchlist, blacklist optional
-from urllib.request import build_opener, HTTPCookieProcessor
+from urllib.request import build_opener, HTTPCookieProcessor, urlopen
 from http.cookiejar import CookieJar
 import json
 import time, datetime
@@ -32,6 +32,7 @@ import smtplib
 from email.mime.text import MIMEText
 import configparser
 import csv
+from os.path import exists
 
 
 class Notifier:
@@ -172,6 +173,50 @@ class Notifier:
         server.sendmail(self.mailfrom, self.mailto, msg.as_string())
         server.quit()
 
+    def plane_image(self, icao):
+        """
+        http://www.airport-data.com/api/doc.php
+        :return: (str) relative filepath to image
+        """
+        # Search for saved plane image
+        if exists('/images/planes/{}.jpg'.format(icao)) is False:
+            # Get image from airport-data
+            url = "http://www.airport-data.com/api/ac_thumb.json?m={}&n=N".format(icao)
+            while True:
+                try:
+                    cj = CookieJar()
+                    opener = build_opener(HTTPCookieProcessor(cj))
+                    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+                    response = opener.open(url)
+                    str_response = response.read().decode('utf-8')
+                    image_data = json.loads(str_response)
+                    thumb_url = image_data['data'][0]['image']
+                    f = open('images/planes/{}.jpg'.format(icao), 'wb')
+                    f.write(urlopen(thumb_url).read())
+                    f.close()
+                except:
+                    icao = "unavailable"
+                break
+        return '/images/planes/{}.jpg'.format(icao)
+
+if __name__ == "__main__":
+    notifier = Notifier()
+    while True:
+        # Initialize
+        starttime = time.time()
+        notifier.get_flights(best_position=True)
+        parsed_data = notifier.parse_flights()
+
+        # Save image to directory
+        for plane in parsed_data:
+            notifier.plane_image(plane)
+        # Send notification
+        if len(parsed_data) > 0:
+            notifier.email_notify()
+            print('Sent Notification!')
+        else:
+            print('Nothing to notify!')
+        time.sleep(30.0 - ((time.time() - starttime) % 30.0))
 
 
 
