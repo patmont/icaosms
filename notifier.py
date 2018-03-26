@@ -22,7 +22,6 @@ Copyright:
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-# TODO: Make watchlist, blacklist optional
 from urllib.request import build_opener, HTTPCookieProcessor, urlopen
 from http.cookiejar import CookieJar
 import json
@@ -112,20 +111,23 @@ class Notifier:
 
     def get_flights(self, best_position=True):
         self.data = {}
-        while True:
-            try:
-                cj = CookieJar()
-                opener = build_opener(HTTPCookieProcessor(cj))
-                opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-                response = opener.open(self.url)
-                str_response = response.read().decode('utf-8')
-                self.data = json.loads(str_response)
-                if best_position:
-                    Notifier.best_position(self)
+        for i in range(0,10):
+            while True:
+                try:
+                    cj = CookieJar()
+                    opener = build_opener(HTTPCookieProcessor(cj))
+                    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+                    response = opener.open(self.url)
+                    str_response = response.read().decode('utf-8')
+                    self.data = json.loads(str_response)
+                    if best_position:
+                        Notifier.best_position(self)
 
-            except (IOError, http.client.HTTPException) as e:
-                raise
-            break
+                except:
+                    time.sleep(30)
+                    continue
+                break
+
         return self.data
 
     def parse_flights(self):
@@ -201,6 +203,9 @@ class Notifier:
 
 if __name__ == "__main__":
     notifier = Notifier()
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
     while True:
         # Initialize
         starttime = time.time()
@@ -216,10 +221,6 @@ if __name__ == "__main__":
             print('Sent Notification!')
         else:
             print('Nothing to notify!')
-        time.sleep(30.0 - ((time.time() - starttime) % 30.0))
-
-
-
-
-
+        refresh_time = float(config['TIMING']['refresh_time'])
+        time.sleep(refresh_time - ((time.time() - starttime) % refresh_time))
 
