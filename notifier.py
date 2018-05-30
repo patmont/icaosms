@@ -148,8 +148,10 @@ class Notifier:
                 continue    # Return to top of for loop and increment
 
             # Parse conditions
+            #TODO: consider checking all keys for any blacklist value
             if any(icao not in x for x in self.blacklist)\
-                    and plane['Mil'] is True and 'Mil' in self.flags \
+                    and any(plane['Type'] not in x for x in self.blacklist)\
+                    and plane['Mil'] is True and 'Mil' in self.flags\
                     or plane['Interested'] is True and 'Interested' in self.flags\
                     or any(icao in x for x in self.watchlist):
                 self.parsed_data[icao] = plane
